@@ -1,0 +1,8 @@
+00:14:58 **** Incremental Build of configuration Debug for project projecy_3 ****
+make pre-build main-build 
+a9-linaro-pre-build-step
+' '
+make: Nothing to be done for 'main-build'.
+
+00:14:58 Build Finished (took 181ms)
+

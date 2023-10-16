@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
+		<item value="false" key="isRegEx"/>
+		<item value="XPAR_FABRIC_AXI_GPIO_1_IP2INTC_IRPT_INTR" key="selection"/>
+		<item value="false" key="casesensitive"/>
+		<item value="false" key="incremental"/>
+		<item value="true" key="wrap"/>
+		<item value="false" key="wholeword"/>
+		<list key="findhistory">
+			<item value="XPAR_FABRIC_AXI_GPIO_1_IP2INTC_IRPT_INTR"/>
+			<item value="XPAR_FABRIC_AXI_GPIO_0_IP2INTC_IRPT_INTR"/>
+			<item value="INTERRUPT"/>
+			<item value="XPAR_AXI_GPIO_1_INTERRUPT_PRESENT"/>
+			<item value="XPAR_AXI_GPIO_1_DEVICE_ID"/>
+			<item value="AXI_GPIO_INTERRUPT_ID"/>
+			<item value="XIL_EXCEPTION_ID_INT"/>
+			<item value="InterruptController"/>
+		</list>
+		<list key="replacehistory">
+		</list>
+	</section>
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
+		<item value="296" key="DIALOG_WIDTH"/>
+		<item value="1|Microsoft JhengHei UI|9.0|0|WINDOWS|1|-12|0|0|0|400|0|0|0|1|0|0|0|0|Microsoft JhengHei UI" key="DIALOG_FONT_NAME"/>
+		<item value="391" key="DIALOG_HEIGHT"/>
+		<item value="1446" key="DIALOG_X_ORIGIN"/>
+		<item value="309" key="DIALOG_Y_ORIGIN"/>
+	</section>
+</section>

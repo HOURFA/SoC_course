@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<item value="SoC_wrapper_hw_platform_0" key="programfpga.hwplatform"/>
+	<item value="" key="SoC_wrapper_hw_platform_0-bmmFile"/>
+	<item value="Auto Detect" key="SoC_wrapper_hw_platform_0-device"/>
+	<item value="Local" key="SoC_wrapper_hw_platform_0-target"/>
+	<item value="SoC_wrapper.bit" key="SoC_wrapper_hw_platform_0-bitFile"/>
+	<item value="false" key="SoC_wrapper_hw_platform_0-partial_bit"/>
+</section>
