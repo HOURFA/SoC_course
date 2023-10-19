@@ -67,7 +67,7 @@ void SetupInterruptSystem(XScuGic *GicInstancePtr, XGpio *Gpio, u16 GpioIntrId);
 void IntrHandler();
 int main()
 {
-    int LED_num = 0b11111111;
+    int LED_num = 0b00000000;
     XGpio_Initialize(&LED_XGpio, XPAR_AXI_GPIO_0_DEVICE_ID);	// 初始化LED_XGpio.
     XGpio_SetDataDirection(&LED_XGpio, 1, 0);		// 設置通道.
 
@@ -79,7 +79,7 @@ int main()
     //XGpio_InterruptEnable(&BTN_XGpio,XGPIO_IR_CH1_MASK);
     while(1) {
     	XGpio_DiscreteWrite(&LED_XGpio, 1, LED_num);		// LED_XGpio通道,送LED_num值進去.
-    	LED_num = ~LED_num ;
+    	LED_num = LED_num +1;
     	printf("Delay : %d\n",delay_num);
     	printf("INTERRUPT_TIMES = %d\n",handler_times);
     	usleep(delay_num);
