@@ -1,3 +1,6 @@
+Finalproject_demo
+
+
 不同輸入影像(PS、PL、SD卡) : https://youtu.be/WIC946tDAcw?si=tRG0iezPBSCLDF8Z
 
 
