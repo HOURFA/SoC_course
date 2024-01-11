@@ -1,0 +1,91 @@
+<html>
+
+<head>
+    <script src="./static/lib/assets/jquery.min.js"></script>
+    <script src="./static/lib/assets/bootstrap-4.6.0/js/bootstrap.min.js"></script>
+    <script src="./static/lib/assets/datatables/jquery.dataTables.min.js"></script>
+    <script src="./static/lib/assets/datatables/dataTables.bootstrap4.min.js"></script>
+    <link rel="stylesheet" href="./static/lib/assets/bootstrap-4.6.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./static/lib/assets/datatables/dataTables.bootstrap4.min.css">
+    <style>
+        .modal-dialog {
+            max-width: 80vw !important;
+        }
+
+        .modal-content {
+            height: auto;
+        }
+    </style>
+</head>
+
+<body>
+<!-- 路口事件資訊Modal -->
+<div class="modal fade" id="accidentModal" tabindex="-1" aria-labelledby="groupAccidentModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="groupAccidentModalLabel">路口事件資訊</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-12 col-lg-2">
+                        <select id="selectAccidentNode" style="width: 100%; height: 4vh; margin-bottom: 1vh; text-align: center;" onchange="selectAccidentNode(this.value, false)"></select>
+                        <select id="selectAccidentDate" style="width: 100%; height: 4vh; margin-bottom: 1vh; text-align: center;" onchange="selectAccidentDate(this.value)"></select>
+                    </div>
+                    <div class="col-sm-12 col-lg-10" style="">
+                        <table id="accidentTable" class="table table-striped table-bordered" style="width: 100%; text-align: center;">
+                            <thead>
+                                <tr>
+                                    <th>事件時間</th>
+                                    <th>節點編號</th>
+                                    <th>事件發生秒數</th>
+                                    <th>事件類型</th>
+                                </tr>
+                            </thead>
+                            <tbody id="accidentTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+<script>
+    let accident_node = "",
+        accident_date = "",
+        accident_table = $('#accidentTable').DataTable({
+            "order": [[ 0, "desc" ]]
+        });
+
+    $(function() {
+        reRenderAccident()
+        // setInterval(function () {
+        //     reRenderAccident()
+        // }, 30000)
+    });
+
+    // #------------------事件相關------------------#
+    function getAccidentDateByNode(node, success, error) {
+        request("GET", "getAccidentDateByNode/" + node, null, (res) => {
+            success(res)
+        }, (res) => {
+            error(res)
+        })
+    }
+
+    function getAccidentByDate(node, date, success, error) {
+        request("GET", "getAccidentByDate/" + node + "/" + date, null, (res) => {
+            success(res)
+        }, (res) => {
+            error(res)
+        })
+    }
+</script>
+
+</html>

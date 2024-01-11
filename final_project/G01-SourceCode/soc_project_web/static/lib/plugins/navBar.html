@@ -1,0 +1,71 @@
+<html>
+
+<head>
+</head>
+
+<body>
+	<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+		<!-- Brand/logo -->
+		<a class="navbar-brand" href="./">主頁</a>
+		<div class="navbar-brand">選擇節點:<div id="NodeID"></div></div>
+		<!-- Links -->
+		<ul class="navbar-nav ml-auto" id="bar"></ul>
+	</nav>
+</body>
+<script>
+	let navItemDict = {
+		"recognition": `<li class="nav-item admin_only">
+							<a class="nav-link" href="./recognition">圖像辨識</a>
+						</li>`,
+		"surveillance": `<li class="nav-item">
+							<a class="nav-link" href="./surveillance">影片調閱</a>
+						</li>`,
+		"setting": `<li class="nav-item admin_only">
+						<a class="nav-link" href="./setting">路口設定</a>
+					</li>`,
+		"moveTrainingSet": `<li class="nav-item admin_only">
+								<a class="nav-link" href="./moveTrainingSet">圖片搬移</a>
+							</li>`,
+		"modelLayerSetting": `<li class="nav-item admin_only">
+								<a class="nav-link" href="./modelLayerSetting">類別分類與訓練</a>
+							</li>`,
+		"selectModel": `<li class="nav-item admin_only">
+							<a class="nav-link" href="./selectModel">模型評分</a>
+						</li>`,
+		"selectNode": `<li class="nav-item ">
+							<a class="nav-link" href="./selectNode">選擇節點</a>
+						</li>`
+	}
+
+	$(document).ready(function () {
+		if (selectedNode == null)
+			$("#NodeID").text("尚未選擇節點")
+		if (selectedNode != null)
+			$("#NodeID").text(selectedNode)
+
+		for (let i = 0; i < serverModePage[serverMode].length; i++) {
+			let page = serverModePage[serverMode][i]
+			$(navItemDict[page]).appendTo($("#bar"))
+		}
+		
+		if (serverMode != "standalone" && (parseInt(userInfo["permission"]) < 2 || isNaN(parseInt(userInfo["permission"])))) {
+			$(".admin_only").remove()
+		}
+
+		if (userInfo["account"] != 0) {
+			let Element = '<li class="nav-item "><a class="nav-link" onclick=LogOut() style = "cursor: pointer">登出</a></li>'
+			$(Element).appendTo($("#bar"))
+		} else if (userInfo["account"] < 2) {
+			let Element = '	<li class="nav-item "><a class="nav-link" href=./login>登入</a></li>'
+			$(Element).appendTo($("#bar"))
+		}
+	})
+
+	function LogOut() {
+		localStorage.clear()
+		location.href = "./login"
+		return
+	}
+</script>
+
+</html>

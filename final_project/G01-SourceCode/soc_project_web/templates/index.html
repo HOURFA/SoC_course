@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>影像處理之軟硬體協同</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="./static/lib/assets/request.js"></script>
+    <link rel="stylesheet" href="./static/lib/assets/bootstrap-4.6.0/css/bootstrap.min.css">
+    {% csrf_token %}
+    <style>
+        .btn {
+            width: 50px;
+            height: 50px;
+            font-size: 18px;
+            margin: 5px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+    
+        .btn:hover {
+            background-color: #45a049;
+        }
+    
+        table {
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+    
+        .flex_container {
+            display: flex;
+            flex-direction: column; /* 将布局方向设置为垂直列 */
+            align-items: center;
+        }
+    
+        .top_row {
+            display: flex;
+            justify-content: space-between; /* 将布局方向设置为水平，两端对齐 */
+            width: 100vw;
+            margin-bottom: 20px;
+        }
+    
+        .left_box, .right_box {
+            width: 48%; /* 设置左右两个框的宽度 */
+        }
+    
+        .flex_box {
+            border: solid 5px rgb(255, 223, 79);
+            background-color: rgb(255, 233, 136);
+            text-align: center;
+            padding: 10px;
+        }
+    
+        .controller_item {
+            margin-bottom: 10px;
+        }
+    
+        .controller_text {
+            width: 15vw;
+            height: 4vh;
+        }
+    
+        .controller_btn {
+            width: 7vw;
+            height: 4vh;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    
+        .controller_btn:hover {
+            background-color: #45a049;
+        }
+    
+        #msg_board {
+            width: 75vw;
+            height: 75vh;
+            border: double 5px rgb(128, 128, 128);
+            margin-top: 30px;
+            font-size: large;
+            overflow-y: auto;
+            resize: none;
+        }
+    </style>
+    
+</head>
+<body>
+    <div class="flex_container">
+        <div class="flex_box" id="controller_box">
+            <div>
+                <div for="port" class="controller_item controller_text">Port</div>
+                <select class="controller_text" id="port">
+                    <option selected disabled>請選擇可用的連接埠</option>
+                </select>
+                <div for="baudRate" class="controller_item controller_text">Baud Rate</div>
+                <input type="number" class="controller_text" id="baudRate">
+                <div style="display: flex; flex-flow: row nowrap; justify-content: space-around; margin-top: 10px;">
+                    <button type="button" class="controller_btn" id="connectBtn">Connect</button>
+                    <button type="button" class="controller_btn" id="closeBtn">Close</button>
+                </div>
+            </div>
+        </div>
+        <table>
+            <tr>
+                <td><button class="btn" onclick="deliverNumber(1)">1</button></td>
+                <td><button class="btn" onclick="deliverNumber(2)">2</button></td>
+                <td><button class="btn" onclick="deliverNumber(3)">3</button></td>
+                <td><button class="btn" onclick="deliverNumber(4)">4</button></td>
+                <td><button class="btn" onclick="deliverNumber(5)">5</button></td>
+                <td><button class="btn" onclick="deliverNumber(6)">6</button></td>
+                <td><button class="btn" onclick="deliverNumber(7)">7</button></td>
+                <td><button class="btn" onclick="deliverNumber(8)">8</button></td>
+                <td><button class="btn" onclick="deliverNumber(9)">9</button></td>
+                <td><button class="btn" onclick="deliverNumber(0)">0</button></td>
+            </tr>
+        </table>
+		<!--<img src="/static/test.jpg" alt="Image">-->
+		<button onclick="retrieveImage()">Retrieve Image</button>
+        <div id="imageContainer"></div>
+        <textarea id="msg_board" rows="20" cols="15" readonly></textarea>
+		
+    </div>
+<script>
+        var Timer
+        var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+        // 在每次發送 AJAX POST 請求時，手動設定 CSRF token
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+                    // 只有當請求不是跨域的時候才附加 CSRF token
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+        
+            // 一開始先禁用 Deliver 按鈕
+        // $("#deliverBtn").attr("disabled", true);
+        getCOM((res)=>{
+     		// 處理成功的響應
+     		for (let index in res['COM']) {
+         		let port = res['COM'][index];
+        		$("#port").append(`<option value='${port}'>${port}</option>`);
+     		}
+ 		}), (err)=>{
+            $("#msg_board").text($("#msg_board").val() + "搜尋可連接的COM埠時發生錯誤\n")
+        }
+ 		$("#baudRate").val(115200)
+            // 連接按鈕的點擊事件
+        $("#connectBtn").click(function(){
+		    if (!($("#baudRate").val()) || !($("#port").val())){
+			    alert("請填寫連接埠(Port)和鮑率(Baud Rate)")
+			    return
+		    }
+            data = {
+                "port": $("#port").val(),
+                "baudRate": $("#baudRate").val()
+		    }
+            ConnectUART(data, (res)=>{
+                $("#connectBtn").attr("disabled", true)
+                $("#closeBtn").removeAttr("disabled")
+                // $("#deliverBtn").removeAttr("disabled");
+                $("#controller_box").css("border", "solid 5px rgb(58, 216, 53)")
+                $("#controller_box").css("background-color", "rgb(143, 230, 140)")
+                $("#msg_board").text("連接成功\n");
+            }, (err)=> {
+                $("#msg_board").text($("#msg_board").val() + "連線失敗\n")
+            })
+	    })
+            // Deliver 按鈕的點擊事件
+        // $("#deliverBtn").click(function () {
+        //     let contours = $("#contours").val();
+        //     // 驗證輸入的 Contours
+        //     if (!contours) {
+        //         alert("請填寫 area");
+        //         return;
+        //     }
+
+        //     // 假設 DeliverDataToHardware 函數已經定義
+        //     deliverarea({
+        //         contours: contours
+        //     }, (res) => {
+        //         // 資料傳送成功的處理
+        //         $("#msg_board").text("傳送成功，等待處理結果...\n");
+        //         Timer = setInterval(function() {
+        //             getData();
+        //         }, 50);
+        //     }, (err) => {
+        //         // 資料傳送失敗的處理
+        //         alert("資料傳送失敗");
+        //         $("#msg_board").text("請先連接 COM 埠\n");
+        //     });
+        // })
+// 關閉按鈕的點擊事件
+        $("#closeBtn").click(function(){
+            closeUART((res)=>{
+                clearInterval(Timer)
+                $("#closeBtn").attr("disabled", true)
+                // $("#deliverBtn").attr("disabled", true);
+                $("#connectBtn").removeAttr("disabled")
+                $("#controller_box").css("border", "solid 5px rgb(255, 223, 79)")
+                $("#controller_box").css("background-color", "rgb(255, 233, 136)")
+
+                $("#msg_board").text("已關閉連接\n");
+            }, (err)=> {
+                $("#msg_board").text($("#msg_board").val() + "異常錯誤\n")
+            })
+        })
+        function deliverNumber(number) {
+            let data = {
+                contours: number.toString()  // 将数字转换为字符串
+            };
+
+            // 调用 deliverarea 函数，将数字发送到服务器
+            deliverarea(data, (res) => {
+                // 资料传送成功的处理
+                $("#msg_board").text("傳送成功，等待處理結果...\n");
+                Timer = setInterval(function() {
+                getData();
+                }, 250);
+            }, (err) => {
+                // 资料传送失败的处理
+                alert("資料傳送失敗");
+                $("#msg_board").text("請先連接 COM 埠\n");
+            });
+        }
+
+        function getData() {
+            readUARTdata((res) => {
+                let result = res['data'];
+                $("#msg_board").text($("#msg_board").val() + result + "\n")
+            }, (err) => {
+
+            });
+        }
+		function getCookie(name) {
+				var cookieValue = null;
+				if (document.cookie && document.cookie !== '') {
+					var cookies = document.cookie.split(';');
+					for (var i = 0; i < cookies.length; i++) {
+						var cookie = cookies[i].trim();
+						if (cookie.substring(0, name.length + 1) === (name + '=')) {
+							cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+							break;
+						}
+					}
+				}
+				return cookieValue;
+			}
+
+			function retrieveImage() {
+				var csrfToken = getCookie('csrftoken');
+
+				fetch('/retrieve_image/', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'X-CSRFToken': csrfToken
+					}
+				})
+				.then(response => response.json())
+				.then(data => {
+					if (data.status === 'success') {
+						var img = document.createElement('img');
+						img.src = 'data:image/jpeg;base64,' + data.image_data;
+
+						var imageContainer = document.getElementById('imageContainer');
+						imageContainer.innerHTML = '';  // 清空容器
+						imageContainer.appendChild(img);
+					} else {
+						console.error('Error retrieving image:', data.message);
+					}
+				})
+				.catch(error => {
+					console.error('Error retrieving image:', error);
+				});
+			}		
+
+
+
+</script>
+</body>
+</html>
